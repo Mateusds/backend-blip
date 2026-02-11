@@ -8,7 +8,7 @@ export default async function handler(
     const response = await fetch('https://msging.net/commands', {
       method: 'POST',
       headers: {
-        'Authorization': `Key ${process.env.BLIP_HTTP_KEY}`,
+        Authorization: `Key ${process.env.BLIP_HTTP_KEY}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
@@ -21,12 +21,12 @@ export default async function handler(
 
     const data = await response.json();
 
-    res.setHeader('Cache-Control', 's-maxage=30');
-    res.status(200).json(data.resource);
+    // 👇 RETORNE A RESPOSTA COMPLETA
+    return res.status(200).json(data);
+
   } catch (error: any) {
-    res.status(500).json({
-      error: 'Erro ao consultar tickets',
-      detail: error.message
+    return res.status(500).json({
+      error: error.message
     });
   }
 }
