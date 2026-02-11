@@ -21,12 +21,20 @@ export default async function handler(
 
     const data = await response.json();
 
-    // 👇 RETORNE A RESPOSTA COMPLETA
-    return res.status(200).json(data);
+    if (data.status !== 'success') {
+      return res.status(502).json({
+        error: 'Blip failure',
+        detail: data.reason
+      });
+    }
+
+    res.setHeader('Cache-Control', 's-maxage=30');
+    return res.status(200).json(data.resource);
 
   } catch (error: any) {
     return res.status(500).json({
-      error: error.message
+      error: 'Erro ao consultar tickets',
+      detail: error.message
     });
   }
 }
