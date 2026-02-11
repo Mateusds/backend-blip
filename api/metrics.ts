@@ -8,7 +8,7 @@ export default async function handler(
     const response = await fetch('https://msging.net/commands', {
       method: 'POST',
       headers: {
-        'Authorization': `Key ${process.env.BLIP_HTTP_KEY}`,
+        Authorization: `Key ${process.env.BLIP_HTTP_KEY}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
@@ -21,10 +21,21 @@ export default async function handler(
 
     const data = await response.json();
 
+    // 🔎 Log para diagnóstico
+    console.log('BLIP RESPONSE /metrics:', data);
+
+    if (data.status !== 'success') {
+      return res.status(502).json({
+        error: 'Blip returned failure',
+        detail: data.reason
+      });
+    }
+
     res.setHeader('Cache-Control', 's-maxage=30');
-    res.status(200).json(data.resource);
+    return res.status(200).json(data.resource);
+
   } catch (error: any) {
-    res.status(500).json({
+    return res.status(500).json({
       error: 'Erro ao consultar métricas',
       detail: error.message
     });
